@@ -1,0 +1,12 @@
+---
+layout: null
+permalink: /debug.html
+---
+<pre>
+{% for p in site.people %}
+FILE: {{ p.path }}
+-------------------
+{{ p | jsonify }}
+
+{% endfor %}
+</pre>
