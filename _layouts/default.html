@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ page.title | default: "Family Tree" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Family Tree</h1>
+  </header>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <div id="person-modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="modal-close">×</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="{{ '/assets/js/tree.js' | relative_url }}"></script>
+</body>
+</html>

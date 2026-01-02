@@ -1,0 +1,20 @@
+{
+  "gender": ["male", "female", "unknown"],
+  "relationship_types": [
+    "biological",
+    "adoptive_parent",
+    "guardian",
+    "step_parent",
+    "step_child",
+    "sibling"
+  ],
+  "event_types": [
+    "migration",
+    "marriage",
+    "divorce",
+    "education",
+    "birth",
+    "death"
+  ],
+  "privacy": ["public", "family-only", "private"]
+}

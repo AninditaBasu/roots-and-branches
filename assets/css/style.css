@@ -1,0 +1,63 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+}
+
+header {
+  padding: 0.5rem 1rem;
+  background: #333;
+  color: white;
+}
+
+#tree-container {
+  width: 100vw;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+.node rect {
+  fill: white;
+  stroke: #444;
+  rx: 6;
+  ry: 6;
+}
+
+.node text {
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-width: 1.5px;
+}
+
+.link.adoptive {
+  stroke-dasharray: 4,2;
+}
+
+.hidden { display: none; }
+
+/* Modal */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background: white;
+  max-width: 400px;
+  margin: 10% auto;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+#modal-close {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+}

@@ -1,0 +1,21 @@
+# Site settings
+title: Roots and branches
+description: A family database with visualisations
+
+theme: minima
+
+# Collections
+collections:
+  people:
+    output: true
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "people"
+    values:
+      layout: "person"
+
+markdown: kramdown
+
