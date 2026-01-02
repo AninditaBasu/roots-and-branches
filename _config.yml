@@ -1,23 +1,10 @@
-# Site settings
 title: Roots and branches
 description: A family database with visualisations
 
-remote_theme: pages-themes/primer@v0.6.0
-plugins:
-  - jekyll-remote-theme
+theme: null
 
-# Collections
 collections:
   people:
     output: true
 
-# Defaults
-defaults:
-  - scope:
-      path: ""
-      type: "people"
-    values:
-      layout: "person"
-
 markdown: kramdown
-

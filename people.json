@@ -1,0 +1,32 @@
+---
+layout: null
+permalink: /people.json
+---
+[
+{% assign last = site.people | size | minus: 1 %}
+{% for p in site.people %}
+  {
+    "id": {{ p.id | jsonify }},
+    "name": {{ p.name | jsonify }},
+    "given_names": {{ p.given_names | jsonify }},
+    "family_name": {{ p.family_name | jsonify }},
+    "aliases": {{ p.aliases | jsonify }},
+    "gender": {{ p.gender | jsonify }},
+    "born": {{ p.born | jsonify }},
+    "born_place": {{ p.born_place | jsonify }},
+    "born_place_id": {{ p.born_place_id | jsonify }},
+    "died": {{ p.died | jsonify }},
+    "died_place": {{ p.died_place | jsonify }},
+    "died_place_id": {{ p.died_place_id | jsonify }},
+    "parents": {{ p.parents | jsonify }},
+    "spouses": {{ p.spouses | jsonify }},
+    "relationships": {{ p.relationships | jsonify }},
+    "photo": {{ p.photo | jsonify }},
+    "privacy": {{ p.privacy | jsonify }},
+    "career": {{ p.career | jsonify }},
+    "education": {{ p.education | jsonify }},
+    "events": {{ p.events | jsonify }},
+    "tags": {{ p.tags | jsonify }}
+  }{% if forloop.index0 < last %},{% endif %}
+{% endfor %}
+]
