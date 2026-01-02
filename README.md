@@ -14,25 +14,25 @@ The design principle is Markdown + YAML metadata + static JSON + client-side vis
     roots-and-branches-repo/
     ├─ _layouts/
     │  ├─ default.html
-    │  └─ person.html
+    │  └─ null.html
     ├─ _people/
-    │  ├─ _template.md            # Copy this for new people
+    │  ├─ _template.md          # Copy this for new people
     │  ├─ P0001.md
     │  ├─ P0002.md
-    │  ├─ P0003.md
-    │  ├─ P0004.md
-    │  ├─ P0005.md
     │  └─ ...
     ├─ assets/
     │  ├─ css/
-    │  │  └─ styles.css
-    │  └─ data/
-    │     ├─ vocabulary.json      # Controlled vocabulary
-    │     ├─ places.json          # Place registry with coordinates
+    │  │  └─ style.css
+    │  ├─ data/
+    │  │   ├─ places.json      	# Place registry with coordinates
+    │  │   ├─ vocabulary.json   # Controlled vocabulary
+    │  └─ js/
+    │      ├─ tree.js      		# Place registry with coordinates	
 	├─ _config.yml
 	├─ index.md
+	├─ people.json
 	├─ README.md
-    ├─ tree.html                  # D3 (ancestors and descendants)
+    ├─ tree.html                # D3 (ancestors and descendants)
 ```
 
 ## How this works
