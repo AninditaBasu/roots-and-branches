@@ -6,7 +6,7 @@ permalink: /people.json
 {% assign last = site.people | size | minus: 1 %}
 {% for p in site.people %}
   {
-    "id": {{ p.data["id"] | jsonify }},
+    "id": {{ p.data["pid"] | jsonify }},
     "name": {{ p.data["name"] | jsonify }},
     "given_names": {{ p.data["given_names"] | jsonify }},
     "family_name": {{ p.data["family_name"] | jsonify }},

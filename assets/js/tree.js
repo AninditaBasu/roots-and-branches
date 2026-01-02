@@ -25,7 +25,8 @@ function initTree([people, places, vocab]) {
     p.parents = p.parents || [];
     p.spouses = p.spouses || [];
     p.children = [];
-    peopleById[p.id] = p;
+    peopleById[p.pid] = p;
+
   });
 
   // Compute children (supports both string and object parent formats)
@@ -56,7 +57,8 @@ function initTree([people, places, vocab]) {
   function render(root) {
 
     const nodes = g.selectAll(".node")
-      .data(root.descendants(), d => d.data.id);
+      .data(root.descendants(), d => d.data.pid
+);
 
     const nodeEnter = nodes.enter()
       .append("g")
