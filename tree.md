@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Family Tree
+title: Family tree
 permalink: /tree.html
 ---
 

@@ -1,8 +1,8 @@
 ---
-id: P0001
-name: "Full Name"
-given_names: "Full Given Names"
-family_name: "Family Name"
+pid: P0001
+name: "Full name"
+given_names: "Given names"
+family_name: "Family name"
 aliases: []
 gender: unknown
 
@@ -30,17 +30,11 @@ privacy: public
 events: []
 tags: []
 ---
-## Biography
-Write a life story here.
 
-## Occupation
-Brief list or narrative.
+Write a life story here. Include any [link](https://google.com). Maybe give a list:
 
-## Education
-Brief list or narrative.
+- List item 1
+- List item 2
 
-## Notes
-Any notes.
+And a paragraph all over again.
 
-## Sources
-Citations, documents, links.

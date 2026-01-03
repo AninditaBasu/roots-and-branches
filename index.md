@@ -3,8 +3,6 @@ layout: default
 title: Home
 ---
 
-# Home page
+# Roots and branches
 
-content
-
-- [Tree](tree.html)
+- [Family tree](tree.html)
