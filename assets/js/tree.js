@@ -1,3 +1,5 @@
+console.log("TREE.JS LOADED");
+
 const CONFIG = {
   dataFile: '/roots-and-branches/people.json',
   imageRoot: '/roots-and-branches/assets/images/people/'
