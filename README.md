@@ -101,11 +101,11 @@ You get a RAG-ready structure and an MCP-ready entity graph.
 roots-and-branches/
 ├─ _layouts/
 │  ├─ default.html          # Main layout; includes header, footer, CSS, JS, and modal container
-│  └─ null.html             # Minimal layout for pages where needing no wrapping (used for JSON generation)
+│  └─ null.html             # Minimal layout; used for JSON generation
 │
 ├─ _people/
-│  ├─ _template.md          # Template Markdown file for adding people; copy and edit for new entries
-│  ├─ P0001.md              # Individual person Markdown file with YAML front matter and optional content
+│  ├─ _template.md          # Template Markdown file for adding people; copy for new entries
+│  ├─ P0001.md              # Individual person Markdown file; YAML frontmatter and optional content
 │  ├─ P0002.md              # Another person file
 │  └─ ...                   # All other person files follow the same pattern
 │
@@ -124,7 +124,7 @@ roots-and-branches/
 │  │	│	└─ ...
 │  │
 │  └─ js/
-│      ├─ tree.js           # Main client-side script: computes ancestors and descendants, inter alia
+│      ├─ tree.js           # Main client-side script; computes ancestors and descendants
 │
 ├─ _config.yml              # Jekyll config file for GitHub Pages
 ├─ index.md                 # Home page of the GitHub Pages website
