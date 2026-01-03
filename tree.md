@@ -20,5 +20,4 @@ permalink: /tree.html
   </div>
 </div>
 
-
 <script src="/assets/js/tree.js"></script>
