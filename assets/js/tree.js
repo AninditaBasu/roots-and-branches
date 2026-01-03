@@ -1,78 +1,96 @@
-const base = window.location.pathname.replace(/\/[^\/]*$/, "");
+// tree.js
+Promise.all([
+  fetch('/people.json').then(r => r.json())
+]).then(([people]) => {
 
-fetch(`${base}/people.json`)
-  .then(r => r.json())
-  .then(people => initTree(people))
-  .catch(err => console.error("LOAD ERROR:", err));
+  // Build nodes
+  const nodes = people.map(p => ({
+    data: { id: p.id, label: p.name, gender: p.gender }
+  }));
 
-function initTree(people) {
+  // Build edges
+  const edges = [];
 
-  const width = 1200;
-  const height = 800;
-
-  const svg = d3.select("#tree-container")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr("transform", "translate(40,40)");
-
-  // Index by id
-  const byId = {};
-  people.forEach(p => byId[p.id] = p);
-
-  // Build children lookup
-  const children = {};
-  people.forEach(p => children[p.id] = []);
   people.forEach(p => {
+    // Parent -> Child edges
     (p.parents || []).forEach(par => {
-      if (children[par.id]) children[par.id].push(p.id);
+      if (par.id) {
+        edges.push({ data: { source: par.id, target: p.id, type: 'parent' } });
+      }
+    });
+
+    // Spouse edges (undirected)
+    (p.spouses || []).forEach(sid => {
+      // Only add once to prevent duplicates
+      if (p.id < sid) {
+        edges.push({ data: { source: p.id, target: sid, type: 'spouse' } });
+      }
     });
   });
 
-  // HARD ROOT
-  const ROOT_ID = "P0002";
-  const rootPerson = byId[ROOT_ID];
+  // Initialize Cytoscape
+  const cy = cytoscape({
+    container: document.getElementById('tree-container'),
+    elements: { nodes, edges },
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'content': 'data(label)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'background-color': '#6FB1FC',
+          'color': '#000',
+          'font-size': 12,
+          'width': 50,
+          'height': 50,
+          'border-width': 1,
+          'border-color': '#555',
+          'overlay-padding': 6
+        }
+      },
+      {
+        selector: 'edge[type="parent"]',
+        style: {
+          'width': 2,
+          'line-color': '#888',
+          'target-arrow-color': '#888',
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier'
+        }
+      },
+      {
+        selector: 'edge[type="spouse"]',
+        style: {
+          'width': 2,
+          'line-color': '#c44',
+          'line-style': 'dashed',
+          'curve-style': 'bezier'
+        }
+      }
+    ],
+    layout: {
+      name: 'dagre',
+      rankDir: 'TB', // top-to-bottom
+      nodeSep: 60,
+      edgeSep: 10,
+      rankSep: 80
+    }
+  });
 
-  function buildTree(id) {
-    const p = byId[id];
-    return {
-      id: p.id,
-      name: p.name,
-      children: (children[id] || []).map(cid => buildTree(cid))
-    };
-  }
+  // Node click popup
+  cy.on('tap', 'node', evt => {
+    const node = evt.target.data();
+    const person = people.find(p => p.id === node.id);
+    if (!person) return;
 
-  const data = buildTree(ROOT_ID);
+    const birth = person.born ? `${person.born}${person.born_place ? ' in ' + person.born_place : ''}` : 'Unknown';
+    const death = person.died ? `${person.died}${person.died_place ? ' in ' + person.died_place : ''}` : 'Unknown';
 
-  const root = d3.hierarchy(data);
+    alert(`Name: ${person.name}
+Born: ${birth}
+Died: ${death}
+Spouses: ${(person.spouses || []).join(', ') || 'None'}`);
+  });
 
-  const treeLayout = d3.tree().size([height - 80, width - 200]);
-  treeLayout(root);
-
-  svg.selectAll(".link")
-    .data(root.links())
-    .enter()
-    .append("path")
-    .attr("fill", "none")
-    .attr("stroke", "#888")
-    .attr("d", d3.linkHorizontal()
-      .x(d => d.y)
-      .y(d => d.x)
-    );
-
-  const node = svg.selectAll(".node")
-    .data(root.descendants())
-    .enter()
-    .append("g")
-    .attr("transform", d => `translate(${d.y},${d.x})`);
-
-  node.append("circle")
-    .attr("r", 6)
-    .attr("fill", "#69b");
-
-  node.append("text")
-    .attr("dx", 10)
-    .attr("dy", 4)
-    .text(d => d.data.name);
-}
+}).catch(err => console.error(err));
