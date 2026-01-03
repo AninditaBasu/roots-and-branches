@@ -1,0 +1,43 @@
+{
+  "labelField": "name",
+
+  "displayOrder": [
+    "name",
+    "given_names",
+    "family_name",
+    "aliases",
+    "gender",
+    "born",
+    "born_place",
+    "died",
+    "died_place",
+    "education",
+    "career",
+    "tags"
+  ],
+
+  "fieldLabels": {
+    "name": "Name",
+    "given_names": "Given names",
+    "family_name": "Family name",
+    "aliases": "Also known as",
+    "gender": "Gender",
+    "born": "Born on",
+    "born_place": "Born at",
+    "died": "Died on",
+    "died_place": "Died at",
+    "education": "Education",
+    "career": "Career",
+    "tags": "Tags"
+  },
+
+  "hiddenFields": [
+    "pid",
+    "parents",
+    "spouses",
+    "born_place_id",
+    "died_place_id",
+    "privacy",
+    "photo"
+  ]
+}
