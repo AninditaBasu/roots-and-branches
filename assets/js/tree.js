@@ -1,38 +1,73 @@
-// tree.js
+// ================================
+// tree.js for Roots and Branches
+// ================================
 
-// Compute path to people.json relative to current page
-const basePath = window.location.pathname.replace(/\/[^/]*$/, '/') + 'people.json';
+// Register dagre layout
+cytoscape.use(cytoscapeDagre);
 
-fetch(basePath)
+// Fetch people data
+fetch('people.json')
   .then(r => r.json())
   .then(people => {
-
     if (!people || people.length === 0) {
       console.error('No people data found.');
       return;
     }
 
-    // Build nodes
+    // Map people by ID for easy lookup
+    const peopleById = {};
+    people.forEach(p => { peopleById[p.id] = p; });
+
+    // Create nodes
     const nodes = people.map(p => ({
-      data: { id: p.id, label: p.name, gender: p.gender }
+      data: {
+        id: p.id,
+        label: p.name,
+        gender: p.gender,
+        born: p.born,
+        died: p.died
+      }
     }));
 
-    // Build edges
+    // Create edges: parents -> children
     const edges = [];
-    people.forEach(p => {
-      // Parent -> Child edges
-      (p.parents || []).forEach(par => {
-        if (par.id) {
-          edges.push({ data: { source: par.id, target: p.id, type: 'parent' } });
-        }
-      });
+    people.forEach(child => {
+      if (child.parents && child.parents.length > 0) {
+        child.parents.forEach(parentRef => {
+          const parentId = parentRef.id;
+          if (peopleById[parentId]) {
+            edges.push({
+              data: {
+                id: `${parentId}->${child.id}`,
+                source: parentId,
+                target: child.id,
+                label: parentRef.type && parentRef.type !== 'biological' ? parentRef.type : ''
+              }
+            });
+          }
+        });
+      }
+    });
 
-      // Spouse edges (undirected)
-      (p.spouses || []).forEach(sid => {
-        if (p.id < sid) {
-          edges.push({ data: { source: p.id, target: sid, type: 'spouse' } });
-        }
-      });
+    // Create edges: spouses
+    people.forEach(p => {
+      if (p.spouses && p.spouses.length > 0) {
+        p.spouses.forEach(sid => {
+          if (peopleById[sid]) {
+            // To avoid duplicate spouse edges, only add if source < target
+            if (p.id < sid) {
+              edges.push({
+                data: {
+                  id: `${p.id}-spouse-${sid}`,
+                  source: p.id,
+                  target: sid,
+                  label: 'spouse'
+                }
+              });
+            }
+          }
+        });
+      }
     });
 
     // Initialize Cytoscape
@@ -43,65 +78,52 @@ fetch(basePath)
         {
           selector: 'node',
           style: {
-            'content': 'data(label)',
+            'label': 'data(label)',
             'text-valign': 'center',
-            'text-halign': 'center',
-            'background-color': '#6FB1FC',
-            'color': '#000',
-            'font-size': 12,
+            'color': '#222',
+            'background-color': '#99ccff',
             'width': 50,
             'height': 50,
-            'border-width': 1,
-            'border-color': '#555',
-            'overlay-padding': 6
+            'font-size': 12,
+            'text-wrap': 'wrap'
           }
         },
         {
-          selector: 'edge[type="parent"]',
+          selector: 'edge',
           style: {
-            'width': 2,
-            'line-color': '#888',
-            'target-arrow-color': '#888',
+            'label': 'data(label)',
+            'curve-style': 'bezier',
             'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier'
-          }
-        },
-        {
-          selector: 'edge[type="spouse"]',
-          style: {
-            'width': 2,
-            'line-color': '#c44',
-            'line-style': 'dashed',
-            'curve-style': 'bezier'
+            'line-color': '#999',
+            'target-arrow-color': '#999',
+            'font-size': 10,
+            'text-background-color': '#fff',
+            'text-background-opacity': 0.7,
+            'text-rotation': 'autorotate'
           }
         }
       ],
       layout: {
         name: 'dagre',
-        rankDir: 'TB', // top-to-bottom
-        nodeSep: 60,
+        rankDir: 'TB', // top-bottom
+        nodeSep: 50,
         edgeSep: 10,
-        rankSep: 80
-      }
+        rankSep: 100
+      },
+      userZoomingEnabled: true,
+      userPanningEnabled: true
     });
 
-    // Node click popup
+    // Click handler to show basic info
     cy.on('tap', 'node', evt => {
       const node = evt.target.data();
-      const person = people.find(p => p.id === node.id);
-      if (!person) return;
-
-      const birth = person.born ? `${person.born}${person.born_place ? ' in ' + person.born_place : ''}` : 'Unknown';
-      const death = person.died ? `${person.died}${person.died_place ? ' in ' + person.died_place : ''}` : 'Unknown';
-
-      const spouses = (person.spouses || [])
-        .map(id => people.find(p => p.id === id)?.name || id)
-        .join(', ') || 'None';
-
-      alert(`Name: ${person.name}
-Born: ${birth}
-Died: ${death}
-Spouses: ${spouses}`);
+      const info = `
+        Name: ${node.label}
+        Gender: ${node.gender || 'unknown'}
+        Born: ${node.born || 'unknown'}
+        Died: ${node.died || 'unknown'}
+      `;
+      alert(info);
     });
 
   })
