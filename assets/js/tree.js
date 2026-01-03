@@ -1,8 +1,8 @@
-console.log("TREE.JS LOADED");
+document.addEventListener("DOMContentLoaded", () => {
 
 const CONFIG = {
-  dataFile: document.body.dataset.baseurl + "/people.json",
-  imageRoot: document.body.dataset.baseurl + "/assets/images/people/",
+  dataFile: (document.body.dataset.baseurl || "") + "/people.json",
+  imageRoot: (document.body.dataset.baseurl || "") + "/assets/images/people/",
   id: "id",
   label: "name",
   parent: "parents",
@@ -78,6 +78,7 @@ function getDescendants(id,depth){
 function node(p){
   const d=document.createElement("div");
   d.className="person-node";
+  d.style.position="relative"; // fixes + button
 
   const wrap=document.createElement("div");
   wrap.className="portrait";
@@ -143,3 +144,5 @@ function prettyDate(d){
   const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return `${day} ${months[m-1]} ${y}`;
 }
+
+}); // end DOMContentLoaded
