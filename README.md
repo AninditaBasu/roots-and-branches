@@ -27,12 +27,12 @@ The design principle is Markdown + YAML metadata + static JSON + client-side vis
     │  │   ├─ places.json      	# Place registry with coordinates
     │  │   ├─ vocabulary.json   # Controlled vocabulary
     │  └─ js/
-    │      ├─ tree.js      		# Place registry with coordinates	
+    │      ├─ tree.js	
 	├─ _config.yml
 	├─ index.md
 	├─ people.json
 	├─ README.md
-    ├─ tree.html                # D3 (ancestors and descendants)
+    ├─ tree.html
 ```
 
 ## How this works

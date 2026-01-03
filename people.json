@@ -25,7 +25,8 @@ permalink: /people.json
     "career": {{ p["career"] | jsonify }},
     "education": {{ p["education"] | jsonify }},
     "events": {{ p["events"] | jsonify }},
-    "tags": {{ p["tags"] | jsonify }}
+    "tags": {{ p["tags"] | jsonify }},
+    "content": {{ p.content | jsonify }}
   }{% if forloop.index0 < last %},{% endif %}
 {% endfor %}
 ]

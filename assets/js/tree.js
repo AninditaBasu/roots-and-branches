@@ -1,49 +1,43 @@
-// ===== CONFIG =====
 const CONFIG = {
   dataFile: '/roots-and-branches/people.json',
-  imageRoot: '/roots-and-branches/assets/images/people/',
-  id: 'id',
-  label: 'name',
-  parent: 'parents',
-  spouse: 'spouses'
+  imageRoot: '/roots-and-branches/assets/images/people/'
 };
 
-// ===== PEOPLE DATA =====
 let PEOPLE = {};
 let CHILDREN = {};
 let ROOT = null;
 
-// ===== MODAL SCHEMA =====
-const MODAL_SCHEMA = {
-  born: v => `Born on ${prettyDate(v)}`,
-  born_place: v => `at ${v}`,
-  died: v => `Died on ${prettyDate(v)}`,
-  died_place: v => `at ${v}`,
-//  gender: v => `Gender: ${capitalize(v)}`,
-  aliases: v => `Also known as ${v.join(', ')}`
-};
+// -------- Modal display schema --------
+const MODAL_SCHEMA = [
+  p => {
+    if (!p.born) return null;
+    let t = `Born on ${prettyDate(p.born)}`;
+    if (p.born_place) t += ` at ${p.born_place}`;
+    if (p.died) {
+      t += `; died on ${prettyDate(p.died)}`;
+      if (p.died_place) t += ` at ${p.died_place}`;
+    }
+    return t + '.';
+  },
+  p => p.aliases?.length ? `Also known as ${p.aliases.join(', ')}.` : null,
+  p => p.spouses?.length
+    ? `Spouse of ${p.spouses.map(id => PEOPLE[id]?.name).filter(Boolean).join(', ')}.`
+    : null
+];
 
-// ===== HELPER FUNCTIONS =====
+// -------- Helpers --------
 function prettyDate(d) {
-  const x = new Date(d);
-  return x.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+  return new Date(d).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric'
   });
 }
 
-function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-// ===== FETCH DATA =====
+// -------- Load data --------
 fetch(CONFIG.dataFile)
   .then(r => r.json())
   .then(data => {
     data.forEach(p => {
       PEOPLE[p.id] = p;
-      // build child lookup table
       if (p.parents) {
         p.parents.forEach(pr => {
           if (!CHILDREN[pr.id]) CHILDREN[pr.id] = [];
@@ -54,7 +48,6 @@ fetch(CONFIG.dataFile)
     buildPicker(data);
   });
 
-// ===== ROOT SELECTOR =====
 function buildPicker(list) {
   const sel = document.getElementById('rootPicker');
   list.forEach(p => {
@@ -67,7 +60,7 @@ function buildPicker(list) {
   renderTree(list[0].id);
 }
 
-// ===== TREE RENDERING =====
+// -------- Tree rendering --------
 function renderTree(rootId) {
   ROOT = rootId;
   const tree = document.getElementById('tree');
@@ -83,60 +76,52 @@ function renderTree(rootId) {
   });
 }
 
-// ===== BUILD GENERATIONS (LEVEL ORDER) =====
 function buildGenerations(rootId, depth) {
-  const gens = [];
+  const gens = [[rootId]];
   const seen = new Set([rootId]);
-
-  // root + spouses
-  const rootGen = new Set([rootId]);
-  (PEOPLE[rootId].spouses || []).forEach(s => rootGen.add(s));
-  gens.push([...rootGen]);
 
   // ancestors
   let prev = [rootId];
   for (let d = 1; d <= depth; d++) {
-    const layer = new Set();
+    const layer = [];
     prev.forEach(id => {
       (PEOPLE[id].parents || []).forEach(p => {
         if (!seen.has(p.id)) {
-          layer.add(p.id);
           seen.add(p.id);
+          layer.push(p.id);
         }
       });
     });
-    if (!layer.size) break;
-    gens.unshift([...layer]); // add at top
-    prev = [...layer];
+    if (!layer.length) break;
+    gens.unshift(layer);
+    prev = layer;
   }
 
   // descendants
   prev = [rootId];
   for (let d = 1; d <= depth; d++) {
-    const layer = new Set();
+    const layer = [];
     prev.forEach(id => {
       (CHILDREN[id] || []).forEach(c => {
         if (!seen.has(c)) {
-          layer.add(c);
           seen.add(c);
+          layer.push(c);
         }
       });
     });
-    if (!layer.size) break;
-    gens.push([...layer]);
-    prev = [...layer];
+    if (!layer.length) break;
+    gens.push(layer);
+    prev = layer;
   }
 
   return gens;
 }
 
-// ===== CREATE PERSON NODE =====
+// -------- Node --------
 function node(p) {
   const d = document.createElement('div');
   d.className = 'person-node';
-  d.dataset.pid = p.id;
 
-  // portrait
   const portrait = document.createElement('div');
   portrait.className = 'portrait';
   if (p.photo) {
@@ -146,13 +131,11 @@ function node(p) {
   }
   d.appendChild(portrait);
 
-  // name
   const nm = document.createElement('div');
   nm.className = 'person-name';
   nm.textContent = p.name;
   d.appendChild(nm);
 
-  // expand button
   const b = document.createElement('button');
   b.className = 'expand-btn';
   b.textContent = '+';
@@ -162,24 +145,22 @@ function node(p) {
   };
   d.appendChild(b);
 
-  // click opens modal
   d.onclick = () => openModal(p);
-
   return d;
 }
 
-// ===== OPEN MODAL =====
+// -------- Modal --------
 function openModal(p) {
   document.getElementById('modal').classList.remove('hidden');
   document.getElementById('modal-name').textContent = p.name;
 
-  document.getElementById('modal-details').innerHTML =
-    Object.entries(MODAL_SCHEMA)
-      .filter(([k]) => p[k])
-      .map(([k, fmt]) => `<p>${fmt(p[k])}</p>`)
-      .join('');
+  const facts = MODAL_SCHEMA.map(f => f(p)).filter(Boolean);
+  const body =
+    facts.map(t => `<p>${t}</p>`).join('') +
+    (p.content ? `<hr>${p.content}` : '');
+
+  document.getElementById('modal-details').innerHTML = body;
 }
 
-// ===== CLOSE MODAL =====
 document.getElementById('modal-close').onclick =
   () => document.getElementById('modal').classList.add('hidden');
