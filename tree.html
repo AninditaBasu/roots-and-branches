@@ -4,32 +4,25 @@ title: Family Tree
 permalink: /tree.html
 ---
 
-<h2>Family Tree</h2>
-
-<label>
-  Start person:
-  <select id="root-select"></select>
-</label>
-
-<div id="tree-container" style="width:100%; height:800px; overflow:auto; border:1px solid #ccc; margin-top:10px;"></div>
-
-<div id="modal" style="
-  display:none;
-  position:fixed;
-  top:10%;
-  left:10%;
-  width:80%;
-  height:80%;
-  background:#f6f2e8;
-  border:2px solid #333;
-  box-shadow:0 0 20px rgba(0,0,0,0.3);
-  padding:20px;
-  overflow-y:auto;
-  z-index:1000;
-">
-  <button id="modal-close" style="float:right;">Close</button>
-  <h3>Details</h3>
-  <div id="modal-body"></div>
+<div id="tree-toolbar">
+  <select id="rootPicker"></select>
 </div>
 
-<script src="/roots-and-branches/assets/js/tree.js"></script>
+<div id="tree"></div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span id="modal-name"></span>
+      <button id="modal-close">×</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="tab active" data-tab="details">Details</button>
+      <button class="tab" data-tab="content">Read more</button>
+    </div>
+    <div id="modal-details" class="modal-body"></div>
+    <div id="modal-content" class="modal-body hidden"></div>
+  </div>
+</div>
+
+<script src="/assets/js/tree.js"></script>
