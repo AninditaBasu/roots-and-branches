@@ -47,12 +47,22 @@ function initTree([people, places, vocab]) {
     });
   });
 
-  // Pick root = someone with no parents
-  const rootPerson = people.find(p => p.parents.length === 0) || people[0];
+// Build synthetic super-root so we can render multiple founders
+const roots = people.filter(p => !p.parents || p.parents.length === 0);
 
-  const hierarchy = d3.hierarchy(rootPerson, d =>
-    d.children.map(c => peopleById[c.id])
-  );
+const superRoot = {
+  id: "__ROOT__",
+  name: "Family",
+  children: roots.map(r => ({ id: r.id }))
+};
+
+// childrenMap must already exist at this point
+childrenMap.set("__ROOT__", roots);
+
+const hierarchy = d3.hierarchy(superRoot, d =>
+  (childrenMap.get(d.id) || [])
+);
+
 
   const treeLayout = d3.tree().nodeSize([90, 200]);
   treeLayout(hierarchy);
