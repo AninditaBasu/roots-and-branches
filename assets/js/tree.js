@@ -12,11 +12,16 @@ const svg = d3.select("#tree-container")
 
 const g = svg.append("g").attr("transform", "translate(80,40)");
 
+const base = window.location.pathname.replace(/\/[^\/]*$/, "");
+
 Promise.all([
-  fetch(window.location.origin + "/people.json").then(r => r.json()),
-  fetch(window.location.origin + "/assets/data/places.json").then(r => r.json()),
-  fetch(window.location.origin + "/assets/data/vocabulary.json").then(r => r.json())
-]).then(initTree).catch(err => console.error(err));
+  fetch(`${base}/people.json`).then(r => r.json()),
+  fetch(`${base}/assets/data/places.json`).then(r => r.json()),
+  fetch(`${base}/assets/data/vocabulary.json`).then(r => r.json())
+])
+.then(initTree)
+.catch(err => console.error("LOAD ERROR:", err));
+
 
 function initTree([people, places, vocab]) {
 
