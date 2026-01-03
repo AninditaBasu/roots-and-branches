@@ -1,6 +1,8 @@
 title: Roots and branches
 description: A family database with visualisations
 
+baseurl: "/roots-and-branches"
+
 theme: null
 
 collections:
