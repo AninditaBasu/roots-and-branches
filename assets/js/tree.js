@@ -1,68 +1,45 @@
-// ================================
-// tree.js for Roots and Branches
-// ================================
-
-// Register dagre layout
-cytoscape.use(cytoscapeDagre);
-
-// Fetch people data
-fetch('people.json')
+// Fetch people.json
+fetch('/roots-and-branches/people.json')
   .then(r => r.json())
   .then(people => {
     if (!people || people.length === 0) {
-      console.error('No people data found.');
+      console.error("No people data found.");
       return;
     }
 
-    // Map people by ID for easy lookup
+    // Map people by ID
     const peopleById = {};
     people.forEach(p => { peopleById[p.id] = p; });
 
-    // Create nodes
-    const nodes = people.map(p => ({
-      data: {
-        id: p.id,
-        label: p.name,
-        gender: p.gender,
-        born: p.born,
-        died: p.died
-      }
-    }));
-
-    // Create edges: parents -> children
+    // Build Cytoscape elements
+    const nodes = [];
     const edges = [];
-    people.forEach(child => {
-      if (child.parents && child.parents.length > 0) {
-        child.parents.forEach(parentRef => {
-          const parentId = parentRef.id;
-          if (peopleById[parentId]) {
+
+    people.forEach(p => {
+      // Add node
+      nodes.push({
+        data: { id: p.id, label: p.name, person: p }
+      });
+
+      // Add parent-child edges
+      if (p.parents && p.parents.length > 0) {
+        p.parents.forEach(par => {
+          if (peopleById[par.id]) {
             edges.push({
-              data: {
-                id: `${parentId}->${child.id}`,
-                source: parentId,
-                target: child.id,
-                label: parentRef.type && parentRef.type !== 'biological' ? parentRef.type : ''
-              }
+              data: { id: `${par.id}-${p.id}`, source: par.id, target: p.id, type: 'parent' }
             });
           }
         });
       }
-    });
 
-    // Create edges: spouses
-    people.forEach(p => {
+      // Add spouse edges
       if (p.spouses && p.spouses.length > 0) {
-        p.spouses.forEach(sid => {
-          if (peopleById[sid]) {
-            // To avoid duplicate spouse edges, only add if source < target
-            if (p.id < sid) {
+        p.spouses.forEach(sp => {
+          if (peopleById[sp]) {
+            // Avoid duplicate edges
+            if (!edges.some(e => e.data.source === sp && e.data.target === p.id)) {
               edges.push({
-                data: {
-                  id: `${p.id}-spouse-${sid}`,
-                  source: p.id,
-                  target: sid,
-                  label: 'spouse'
-                }
+                data: { id: `${p.id}-${sp}`, source: p.id, target: sp, type: 'spouse' }
               });
             }
           }
@@ -70,7 +47,7 @@ fetch('people.json')
       }
     });
 
-    // Initialize Cytoscape
+    // Create Cytoscape instance
     const cy = cytoscape({
       container: document.getElementById('tree-container'),
       elements: { nodes, edges },
@@ -80,51 +57,51 @@ fetch('people.json')
           style: {
             'label': 'data(label)',
             'text-valign': 'center',
-            'color': '#222',
-            'background-color': '#99ccff',
-            'width': 50,
-            'height': 50,
-            'font-size': 12,
-            'text-wrap': 'wrap'
+            'color': '#fff',
+            'background-color': '#0074D9',
+            'width': '60px',
+            'height': '60px',
+            'text-wrap': 'wrap',
+            'text-max-width': '80px',
+            'font-size': '12px'
           }
         },
         {
           selector: 'edge',
           style: {
-            'label': 'data(label)',
-            'curve-style': 'bezier',
+            'width': 2,
+            'line-color': '#aaa',
             'target-arrow-shape': 'triangle',
-            'line-color': '#999',
-            'target-arrow-color': '#999',
-            'font-size': 10,
-            'text-background-color': '#fff',
-            'text-background-opacity': 0.7,
-            'text-rotation': 'autorotate'
+            'target-arrow-color': '#aaa',
+            'curve-style': 'bezier'
+          }
+        },
+        {
+          selector: 'edge[type="spouse"]',
+          style: {
+            'line-style': 'dashed',
+            'target-arrow-shape': 'none'
           }
         }
       ],
       layout: {
-        name: 'dagre',
-        rankDir: 'TB', // top-bottom
-        nodeSep: 50,
-        edgeSep: 10,
-        rankSep: 100
-      },
-      userZoomingEnabled: true,
-      userPanningEnabled: true
+        name: 'fcose',
+        quality: 'default',
+        randomize: false,
+        animate: true
+      }
     });
 
-    // Click handler to show basic info
-    cy.on('tap', 'node', evt => {
-      const node = evt.target.data();
-      const info = `
-        Name: ${node.label}
-        Gender: ${node.gender || 'unknown'}
-        Born: ${node.born || 'unknown'}
-        Died: ${node.died || 'unknown'}
-      `;
-      alert(info);
+    // Node click popup
+    cy.on('tap', 'node', function(evt){
+      const p = evt.target.data('person');
+      alert(
+        `${p.name}\nBorn: ${p.born} in ${p.born_place}\n` +
+        `Died: ${p.died || 'N/A'} in ${p.died_place || 'N/A'}\n` +
+        `Parents: ${p.parents.map(x => peopleById[x.id]?.name).join(', ') || 'N/A'}\n` +
+        `Spouses: ${p.spouses.map(x => peopleById[x]?.name).join(', ') || 'N/A'}`
+      );
     });
 
   })
-  .catch(err => console.error('Failed to load people.json', err));
+  .catch(err => console.error("Failed to load people.json", err));
