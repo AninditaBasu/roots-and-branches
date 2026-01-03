@@ -21,6 +21,7 @@ body { background:#f4f7ef; color:#1f2f4d; font-family:Georgia,serif; }
   text-align: center;
   width: 140px;
   cursor: pointer;
+  position: relative;
 }
 
 .portrait {

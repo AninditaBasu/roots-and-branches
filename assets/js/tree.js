@@ -166,3 +166,13 @@ function openModal(p) {
 
 document.getElementById('modal-close').onclick =
   () => document.getElementById('modal').classList.add('hidden');
+  
+
+document.addEventListener("DOMContentLoaded", () => {
+  const closeBtn = document.getElementById("modal-close");
+  if (closeBtn) {
+    closeBtn.onclick = () =>
+      document.getElementById("modal").classList.add("hidden");
+  }
+});
+
