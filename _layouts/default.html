@@ -5,17 +5,16 @@
   <title>{{ page.title | default: "Family Tree" }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-  <script src="{{ '/assets/js/tree.js' | relative_url }}"></script>
 </head>
-<body data-baseurl="{{ site.baseurl }}">
+<body>
+  <header>
+    <h1>{{ page.title | default: "Family Tree" }}</h1>
+  </header>
 
-<header>
-  <h1>{{ page.title | default: "Family Tree" }}</h1>
-</header>
+  <main>
+    {{ content }}
+  </main>
 
-<main>
-  {{ content }}
-</main>
-
+  <script src="{{ '/assets/js/tree.js' | relative_url }}"></script>
 </body>
 </html>

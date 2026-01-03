@@ -19,4 +19,3 @@ permalink: /tree.html
     <div id="modal-details" class="modal-body"></div>
   </div>
 </div>
-

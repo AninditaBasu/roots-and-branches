@@ -1,148 +1,166 @@
-document.addEventListener("DOMContentLoaded", () => {
-
 const CONFIG = {
-  dataFile: (document.body.dataset.baseurl || "") + "/people.json",
-  imageRoot: (document.body.dataset.baseurl || "") + "/assets/images/people/",
-  id: "id",
-  label: "name",
-  parent: "parents",
-  spouse: "spouses"
+  dataFile: '/roots-and-branches/people.json',
+  imageRoot: '/roots-and-branches/assets/images/people/'
 };
 
 let PEOPLE = {};
+let CHILDREN = {};
 let ROOT = null;
 
-/* -------------------- LOAD DATA -------------------- */
+// -------- Modal display schema --------
+const MODAL_SCHEMA = [
+  p => {
+    if (!p.born) return null;
+    let t = `Born on ${prettyDate(p.born)}`;
+    if (p.born_place) t += ` at ${p.born_place}`;
+    if (p.died) {
+      t += `; died on ${prettyDate(p.died)}`;
+      if (p.died_place) t += ` at ${p.died_place}`;
+    }
+    return t + '.';
+  },
+  p => p.aliases?.length ? `Also known as ${p.aliases.join(', ')}.` : null,
+  p => p.spouses?.length
+    ? `Spouse of ${p.spouses.map(id => PEOPLE[id]?.name).filter(Boolean).join(', ')}.`
+    : null
+];
 
+// -------- Helpers --------
+function prettyDate(d) {
+  return new Date(d).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+
+// -------- Load data --------
 fetch(CONFIG.dataFile)
   .then(r => r.json())
   .then(data => {
-    data.forEach(p => PEOPLE[p.id] = p);
+    data.forEach(p => {
+      PEOPLE[p.id] = p;
+      if (p.parents) {
+        p.parents.forEach(pr => {
+          if (!CHILDREN[pr.id]) CHILDREN[pr.id] = [];
+          CHILDREN[pr.id].push(p.id);
+        });
+      }
+    });
     buildPicker(data);
   });
 
-function buildPicker(list){
-  const sel = document.getElementById("rootPicker");
-  sel.innerHTML = "";
-  list.forEach(p=>{
-    const o=document.createElement("option");
-    o.value=p.id; 
-    o.textContent=p.name;
+function buildPicker(list) {
+  const sel = document.getElementById('rootPicker');
+  list.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = p.name;
     sel.appendChild(o);
   });
-  sel.onchange=()=>renderTree(sel.value);
+  sel.onchange = () => renderTree(sel.value);
   renderTree(list[0].id);
 }
 
-/* -------------------- TREE BUILD -------------------- */
+// -------- Tree rendering --------
+function renderTree(rootId) {
+  ROOT = rootId;
+  const tree = document.getElementById('tree');
+  tree.innerHTML = '';
 
-function renderTree(rootId){
-  ROOT=rootId;
-  const tree=document.getElementById("tree");
-  tree.innerHTML="";
+  const generations = buildGenerations(rootId, 3);
 
-  const gens = [
-    getAncestors(rootId,2).reverse(),
-    [PEOPLE[rootId]],
-    getDescendants(rootId,2)
-  ];
-
-  gens.forEach(g=>{
-    const row=document.createElement("div");
-    row.className="generation";
-    g.forEach(p=>row.appendChild(node(p)));
+  generations.forEach(gen => {
+    const row = document.createElement('div');
+    row.className = 'generation';
+    gen.forEach(id => row.appendChild(node(PEOPLE[id])));
     tree.appendChild(row);
   });
 }
 
-function getAncestors(id,depth){
-  if(depth===0) return [];
-  const p=PEOPLE[id];
-  if(!p || !p.parents) return [];
-  return p.parents.flatMap(r=>{
-    const parent=PEOPLE[r.id];
-    return parent ? [parent,...getAncestors(parent.id,depth-1)] : [];
-  });
-}
+function buildGenerations(rootId, depth) {
+  const gens = [[rootId]];
+  const seen = new Set([rootId]);
 
-function getDescendants(id,depth){
-  if(depth===0) return [];
-  const kids = Object.values(PEOPLE).filter(p=>
-    p.parents?.some(r=>r.id===id)
-  );
-  return kids.flatMap(k=>[k,...getDescendants(k.id,depth-1)]);
-}
-
-/* -------------------- NODE -------------------- */
-
-function node(p){
-  const d=document.createElement("div");
-  d.className="person-node";
-  d.style.position="relative"; // fixes + button
-
-  const wrap=document.createElement("div");
-  wrap.className="portrait";
-
-  if(p.photo){
-    const im=document.createElement("img");
-    im.src=CONFIG.imageRoot+p.photo;
-    wrap.appendChild(im);
+  // ancestors
+  let prev = [rootId];
+  for (let d = 1; d <= depth; d++) {
+    const layer = [];
+    prev.forEach(id => {
+      (PEOPLE[id].parents || []).forEach(p => {
+        if (!seen.has(p.id)) {
+          seen.add(p.id);
+          layer.push(p.id);
+        }
+      });
+    });
+    if (!layer.length) break;
+    gens.unshift(layer);
+    prev = layer;
   }
-  d.appendChild(wrap);
 
-  const nm=document.createElement("div");
-  nm.className="person-name";
-  nm.textContent=p.name;
+  // descendants
+  prev = [rootId];
+  for (let d = 1; d <= depth; d++) {
+    const layer = [];
+    prev.forEach(id => {
+      (CHILDREN[id] || []).forEach(c => {
+        if (!seen.has(c)) {
+          seen.add(c);
+          layer.push(c);
+        }
+      });
+    });
+    if (!layer.length) break;
+    gens.push(layer);
+    prev = layer;
+  }
+
+  return gens;
+}
+
+// -------- Node --------
+function node(p) {
+  const d = document.createElement('div');
+  d.className = 'person-node';
+
+  const portrait = document.createElement('div');
+  portrait.className = 'portrait';
+  if (p.photo) {
+    const im = document.createElement('img');
+    im.src = CONFIG.imageRoot + p.photo;
+    portrait.appendChild(im);
+  }
+  d.appendChild(portrait);
+
+  const nm = document.createElement('div');
+  nm.className = 'person-name';
+  nm.textContent = p.name;
   d.appendChild(nm);
 
-  const b=document.createElement("button");
-  b.className="expand-btn";
-  b.textContent="+";
-  b.onclick=e=>{
+  const b = document.createElement('button');
+  b.className = 'expand-btn';
+  b.textContent = '+';
+  b.onclick = e => {
     e.stopPropagation();
     renderTree(p.id);
   };
   d.appendChild(b);
 
-  d.onclick=()=>openModal(p);
+  d.onclick = () => openModal(p);
   return d;
 }
 
-/* -------------------- MODAL -------------------- */
+// -------- Modal --------
+function openModal(p) {
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('modal-name').textContent = p.name;
 
-function openModal(p){
-  const modal=document.getElementById("modal");
-  const body=document.getElementById("modal-details");
-  const title=document.getElementById("modal-name");
-  const closeBtn=document.getElementById("modal-close");
+  const facts = MODAL_SCHEMA.map(f => f(p)).filter(Boolean);
+  const body =
+    facts.map(t => `<p>${t}</p>`).join('') +
+    (p.content ? `<hr>${p.content}` : '');
 
-  title.textContent=p.name;
-
-  let html="";
-
-  if(p.born){
-    html+=`<p><b>Born:</b> ${prettyDate(p.born)}${p.born_place?" at "+p.born_place:""}</p>`;
-  }
-  if(p.died){
-    html+=`<p><b>Died:</b> ${prettyDate(p.died)}${p.died_place?" at "+p.died_place:""}</p>`;
-  }
-  if(p.aliases?.length){
-    html+=`<p><b>Also known as:</b> ${p.aliases.join(", ")}</p>`;
-  }
-
-  if(p.content){
-    html+=`<hr>${p.content}`;
-  }
-
-  body.innerHTML=html;
-  modal.classList.remove("hidden");
-  closeBtn.onclick=()=>modal.classList.add("hidden");
+  document.getElementById('modal-details').innerHTML = body;
 }
 
-function prettyDate(d){
-  const [y,m,day]=d.split("-");
-  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return `${day} ${months[m-1]} ${y}`;
-}
-
-}); // end DOMContentLoaded
+document.getElementById('modal-close').onclick =
+  () => document.getElementById('modal').classList.add('hidden');
