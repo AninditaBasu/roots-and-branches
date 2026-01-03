@@ -152,17 +152,20 @@ function node(p) {
 }
 
 // -------- Modal --------
-function openModal(p) {
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('modal-name').textContent = p.name;
+function openModal(p){
+  const modal = document.getElementById("modal");
+  modal.classList.remove("hidden");
 
-  const facts = MODAL_SCHEMA.map(f => f(p)).filter(Boolean);
-  const body =
-    facts.map(t => `<p>${t}</p>`).join('') +
-    (p.content ? `<hr>${p.content}` : '');
+  document.getElementById("modal-name").textContent = p.name;
 
-  document.getElementById('modal-details').innerHTML = body;
+  const body = document.getElementById("modal-details");
+  body.innerHTML = buildModalDetails(p) + "<hr>" + (p.content || "");
+
+  // bind close every time modal opens (element is guaranteed to exist)
+  const closeBtn = document.getElementById("modal-close");
+  closeBtn.onclick = () => modal.classList.add("hidden");
 }
+
 
 document.getElementById('modal-close').onclick =
   () => document.getElementById('modal').classList.add('hidden');
