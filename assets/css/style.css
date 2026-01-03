@@ -1,3 +1,5 @@
+body { background:#f4f7ef; color:#1f2f4d; font-family:Georgia,serif; }
+
 #tree {
   display: flex;
   flex-direction: column;
@@ -8,26 +10,25 @@
 .generation {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 24px;
 }
 
 .person-node {
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: .5rem;
-  border-radius: 6px;
+  background:#fffdf4;
+  border:2px solid #1f2f4d;
+  border-radius:10px;
+  padding:8px 10px;
   text-align: center;
-  width: 130px;
+  width: 140px;
   cursor: pointer;
 }
 
 .portrait {
-  width: 80px;
-  height: 80px;
-  margin: auto;
-  background: #eee;
-  border-radius: 50%;
-  overflow: hidden;
+  width:64px; height:80px;
+  border:2px solid #1f2f4d;
+  border-radius:50%/60%;
+  margin:0 auto 6px;
+  overflow:hidden; background:#fffdf4;
 }
 
 .portrait img {
@@ -37,7 +38,9 @@
 }
 
 .expand-btn {
-  margin-top: .3rem;
+  position:absolute; bottom:-10px; right:-10px;
+  background:#1f2f4d; color:white; border:none; border-radius:50%;
+  width:22px; height:22px; cursor:pointer;
 }
 
 /* Modal */
@@ -54,9 +57,10 @@
 .modal.hidden { display: none; }
 
 .modal-box {
-  background: #fff;
-  width: 70%;
-  max-height: 80%;
+  background: #fffdf4;
+  width: 80vw;
+  height:80vh;
+  margin:auto; padding:12px; 
   display: flex;
   flex-direction: column;
   border-radius: 6px;
@@ -74,3 +78,5 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.hidden { display:none; }
