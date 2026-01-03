@@ -10,7 +10,7 @@ function initTree(people) {
   const width = 1200;
   const height = 800;
 
-  const svg = d3.select("#tree")
+  const svg = d3.select("#tree-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
