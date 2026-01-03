@@ -1,17 +1,3 @@
-const container = document.getElementById("tree-container");
-const width = container.clientWidth || window.innerWidth;
-const height = container.clientHeight || window.innerHeight - 60;
-
-const svg = d3.select("#tree-container")
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .call(d3.zoom().on("zoom", (event) => {
-    g.attr("transform", event.transform);
-  }));
-
-const g = svg.append("g").attr("transform", "translate(80,40)");
-
 const base = window.location.pathname.replace(/\/[^\/]*$/, "");
 
 Promise.all([
@@ -22,109 +8,76 @@ Promise.all([
 .then(initTree)
 .catch(err => console.error("LOAD ERROR:", err));
 
-
 function initTree([people, places, vocab]) {
 
-  const peopleById = {};
-  people.forEach(p => {
-    p.parents = p.parents || [];
-    p.spouses = p.spouses || [];
-    p.children = [];
-    peopleById[p.pid] = p;
+  const width = 1200;
+  const height = 800;
 
-  });
+  const svg = d3.select("#tree")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(40,40)");
 
-  // Compute children (supports both string and object parent formats)
+  // Index people by id
+  const peopleById = new Map();
+  people.forEach(p => peopleById.set(p.id, p));
+
+  // Build children map
+  const childrenMap = new Map();
+  people.forEach(p => childrenMap.set(p.id, []));
+
   people.forEach(p => {
-    p.parents.forEach(par => {
-      const pid = typeof par === "string" ? par : par.id;
-      if (peopleById[pid]) {
-        peopleById[pid].children.push({
-          id: p.id,
-          type: typeof par === "string" ? "biological" : (par.type || "biological")
-        });
+    (p.parents || []).forEach(par => {
+      if (peopleById.has(par.id)) {
+        childrenMap.get(par.id).push(p);
       }
     });
   });
 
-// Build synthetic super-root so we can render multiple founders
-const roots = people.filter(p => !p.parents || p.parents.length === 0);
+  // Build synthetic root
+  const roots = people.filter(p => !p.parents || p.parents.length === 0);
+  childrenMap.set("__ROOT__", roots);
 
-const superRoot = {
-  id: "__ROOT__",
-  name: "Family",
-  children: roots.map(r => ({ id: r.id }))
-};
+  const superRoot = { id: "__ROOT__", name: "Family" };
 
-// childrenMap must already exist at this point
-childrenMap.set("__ROOT__", roots);
+  const root = d3.hierarchy(superRoot, d => childrenMap.get(d.id) || []);
 
-const hierarchy = d3.hierarchy(superRoot, d =>
-  (childrenMap.get(d.id) || [])
-);
+  const treeLayout = d3.tree().size([height - 80, width - 200]);
+  treeLayout(root);
 
+  // Links
+  svg.selectAll(".link")
+    .data(root.links())
+    .enter()
+    .append("path")
+    .attr("class", "link")
+    .attr("fill", "none")
+    .attr("stroke", "#999")
+    .attr("d", d3.linkHorizontal()
+      .x(d => d.y)
+      .y(d => d.x)
+    );
 
-  const treeLayout = d3.tree().nodeSize([90, 200]);
-  treeLayout(hierarchy);
+  // Nodes
+  const node = svg.selectAll(".node")
+    .data(root.descendants())
+    .enter()
+    .append("g")
+    .attr("class", "node")
+    .attr("transform", d => `translate(${d.y},${d.x})`);
 
-  render(hierarchy);
+  node.append("circle")
+    .attr("r", 6)
+    .attr("fill", d => d.data.id === "__ROOT__" ? "#fff" : "#69b");
 
-  function render(root) {
-
-    const nodes = g.selectAll(".node")
-      .data(root.descendants(), d => d.data.pid
-);
-
-    const nodeEnter = nodes.enter()
-      .append("g")
-      .attr("class", "node")
-      .attr("transform", d => `translate(${d.y},${d.x})`)
-      .on("click", (_, d) => showModal(d.data, places));
-
-    nodeEnter.append("rect")
-      .attr("x", -60)
-      .attr("y", -15)
-      .attr("width", 120)
-      .attr("height", 30);
-
-    nodeEnter.append("text")
-      .attr("text-anchor", "middle")
-      .attr("dy", "0.35em")
-      .text(d => d.data.privacy === "private" ? "Private" : d.data.name);
-
-    nodes.merge(nodeEnter)
-      .transition()
-      .attr("transform", d => `translate(${d.y},${d.x})`);
-
-    const links = g.selectAll(".link")
-      .data(root.links(), d => d.target.data.id);
-
-    links.enter()
-      .append("path")
-      .attr("class", "link")
-      .merge(links)
-      .attr("d", d3.linkHorizontal()
-        .x(d => d.y)
-        .y(d => d.x));
-  }
+  node.append("text")
+    .attr("dx", 10)
+    .attr("dy", 4)
+    .text(d => {
+      if (d.data.id === "__ROOT__") return "";
+      const p = peopleById.get(d.data.id);
+      return p ? p.name : "";
+    });
 }
-
-function showModal(p, places) {
-  const modal = document.getElementById("person-modal");
-  const body = document.getElementById("modal-body");
-
-  const bornPlace = p.born_place_id && places[p.born_place_id]
-    ? places[p.born_place_id].name
-    : "";
-
-  body.innerHTML = `
-    <h2>${p.privacy === "private" ? "Private" : p.name}</h2>
-    <p><b>Born:</b> ${p.born || ""} ${bornPlace}</p>
-    <p><b>Died:</b> ${p.died || ""}</p>
-  `;
-
-  modal.classList.remove("hidden");
-}
-
-document.getElementById("modal-close").onclick = () =>
-  document.getElementById("person-modal").classList.add("hidden");
