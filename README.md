@@ -80,7 +80,7 @@ You're now free to mix and match as you want to:
 
 **Rendering and interactivity**
 
-- Nodes: Each Markdown file becomes a node. The label field is from the schem (`name`, `title`).
+- Nodes: Each Markdown file becomes a node. The label field is from the schema (`name`, `title`).
 - Tree view: Starts at a designated root node. Is positioned vertically (top-down).
 - Depth: Render 3 ancestors and 3 descendants.
 - Computation of relationship: Build the tree breadth-first by generation, not depth-first, to get a level-ordered generation matrix.
@@ -167,7 +167,7 @@ The pattern is:
 ### Topics and collections
 
 -   Unit: Each topic = one Markdown file
--   Metadata: `id`, `title`, `product`, `version`, `tags`, `related_topics`
+-   Metadata: `id`, `title`, `product`, `version`, `tags`, `related_topics` (IDs)
 -   Relationships: Link topics to parent concepts or related topics
 -   Visualisation: Dependency graph of topics, or navigation map
 -   Use case: API docs, user guides, modular help systems
@@ -183,7 +183,7 @@ The pattern is:
 ### Glossary and terms
 
 -   Unit: Each term = one Markdown file.
--   Metadata: `id`, `term`, `definition`, `related_terms`
+-   Metadata: `id`, `term`, `definition`, `related_terms` (IDs)
 -   Relationships: Concept map
 -   Visualisation: Semantic network
 -   Use case: Knowledge base or ontology

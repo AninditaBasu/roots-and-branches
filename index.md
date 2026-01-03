@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Home
+title: Roots and branches
 ---
 
 # Roots and branches
