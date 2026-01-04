@@ -28,11 +28,11 @@ The common schema is:
 
 ```
 ---
-id: NODE_ID
+id: NODE_ID (primary key)
 title: "Human readable name"
 type: topic | term | person | task | module
 relations:
-  - id: OTHER_NODE_ID
+  - id: ANOTHER_NODE_ID (foreign key)
     type: prerequisite | depends_on | | spouse
 tags: []
 ---
@@ -48,7 +48,7 @@ You're now free to mix and match just as you want to:
 - Layout engines: tree, force-graph, radial
 - Validation rules: controlled vocabulary
 
-| Layer       | Purpose             |
+| Component   | Purpose             |
 | ----------- | ------------------- |
 | Frontmatter | Truth               |
 | JSON        | Data layer          |
