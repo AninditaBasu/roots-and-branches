@@ -32,7 +32,7 @@ id: NODE_ID (primary key)
 title: "Human readable name"
 type: topic | term | person | task | module
 relations:
-  - id: ANOTHER_NODE_ID (foreign key)
+  - id: ANOTHER_NODE_ID (~foreign key)
     type: prerequisite | depends_on | | spouse
 tags: []
 ---
@@ -56,8 +56,8 @@ You're now free to mix and match just as you want to:
 
 ```mermaid
 flowchart LR
-    A@{ shape: docs, label: "Markdown files"} --> |Build database| B@{ shape: db, label: "JSON file"}
-    B --> |Infuse semantics with JS logic|C@{ shape: docs, label: "HTML, interactive"}
+    A@{ shape: docs, label: "Markdown files"} --> |Docs become data| B@{ shape: db, label: "JSON file"}
+    B --> |JS derives the hierarchy|C@{ shape: curv-trap, label: "HTML, interactive"}
 ```
 
 ## Implementation details
