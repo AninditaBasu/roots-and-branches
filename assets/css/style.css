@@ -81,3 +81,7 @@ body { background:#f4f7ef; color:#1f2f4d; font-family:Georgia,serif; }
 }
 
 .hidden { display:none; }
+
+ul, ol {
+  line-height: 1.9;
+}

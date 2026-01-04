@@ -5,7 +5,7 @@ title: Roots and branches
 
 # Roots and branches
 
-Here is an example of genealogy rendering (depth is 3): **[Family tree](tree.md)**.
+To see an example rendering, where max. generations is 3, click **[Family tree](tree.md)**.
 
 ---
 
