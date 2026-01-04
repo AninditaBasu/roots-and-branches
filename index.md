@@ -5,7 +5,9 @@ title: Roots and branches
 
 # Roots and branches
 
-Example [Family tree](tree.md)
+Here is an example of genealogy rendering (depth is 3): **[Family tree](tree.md)**.
+
+---
 
 ## Process
 
@@ -26,4 +28,4 @@ flowchart TD
 
 ## Technical details
 
-See the [GitHub README](README.md).
+See the [GitHub README](https://github.com/AninditaBasu/roots-and-branches).
