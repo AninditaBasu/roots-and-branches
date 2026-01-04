@@ -5,7 +5,7 @@
   <title>{{ page.title | default: "Tree" }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <script src="/assets/js/mermaid-fix.js"></script>
+  <script src="{{ '/assets/js/mermaid-fix.js' | relative_url }}"></script>
 
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';

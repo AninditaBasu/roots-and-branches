@@ -5,7 +5,7 @@ title: Roots and branches
 
 # Roots and branches
 
-To see an example rendering, where max. generations is 3, click **[Family tree](tree.md)**.
+To see an example rendering, with 3 generations of ascendants and descendants, click **[Family tree](tree.md)**.
 
 ---
 
