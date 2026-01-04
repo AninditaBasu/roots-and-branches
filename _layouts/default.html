@@ -9,42 +9,8 @@
 
   <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-
-  mermaid.initialize({
-    startOnLoad: false,
-    flowchart: { useMaxWidth: false }
-  });
-
-  function fixSvgSize(svg) {
-    const bbox = svg.getBBox();
-    const pad = 12;
-    const width  = bbox.x + bbox.width  + pad;
-    const height = bbox.y + bbox.height + pad;
-
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
-  }
-
-  async function renderMermaid() {
-    for (const [i, el] of [...document.querySelectorAll(".mermaid")].entries()) {
-      const code = el.textContent;
-      const id = "mmd-" + i;
-
-      const { svg } = await mermaid.render(id, code);
-      el.innerHTML = svg;
-
-      const svgEl = el.querySelector("svg");
-
-      // Wait for fonts to apply
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => fixSvgSize(svgEl));
-      });
-    }
-  }
-
-  window.addEventListener("load", renderMermaid);
-</script>
+mermaid.initialize({ startOnLoad: true, theme: "default" });
+  </script>
 
 
 

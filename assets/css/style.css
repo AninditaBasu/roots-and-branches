@@ -81,9 +81,3 @@ body { background:#f4f7ef; color:#1f2f4d; font-family:Georgia,serif; line-height
 }
 
 .hidden { display:none; }
-
-.mermaid svg .node rect,
-.mermaid svg .node polygon {
-  rx: 6;
-  ry: 6;
-}
