@@ -10,3 +10,7 @@ collections:
     output: true
 
 markdown: kramdown
+
+kramdown:
+  syntax_highlighter_opts:
+    disable: true

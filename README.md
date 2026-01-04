@@ -38,7 +38,7 @@ tags: []
 ---
 ```
 
-Everything else is UI.
+Everything else is ~UI~ presentation.
 
 > Just a note: The generic `relations[]` in that example is to show how the model generalises. The current implementation in this repo uses field-specific relationship arrays. 
 
@@ -48,12 +48,11 @@ You're now free to mix and match as you want to:
 - Layout engines: tree, force-graph, radial
 - Validation rules: controlled vocabulary
 
-
 | Layer       | Purpose             |
 | ----------- | ------------------- |
 | Frontmatter | Truth               |
 | JSON        | Knowledge substrate |
-| UI display  | Human comfort       |
+| GUI display | Human comfort       |
 
 
 ## Implementation details
