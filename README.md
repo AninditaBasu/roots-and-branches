@@ -57,7 +57,7 @@ You're now free to mix and match just as you want to:
 ```mermaid
 flowchart LR
     A@{ shape: docs, label: "Markdown files"} --> |Build database| B@{ shape: db, label: "JSON file"}
-    B --> |Build tree, with JS logic|C@{ shape: docs, label: "HTML, interactive"}
+    B --> |Infuse semantics with JS logic|C@{ shape: docs, label: "HTML, interactive"}
 ```
 
 ## Implementation details
