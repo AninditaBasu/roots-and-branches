@@ -42,7 +42,7 @@ Everything else is ~UI~ presentation.
 
 > Just a note: The generic `relations[]` in that example is to show how the model generalises. The current implementation in this repo uses field-specific relationship arrays. 
 
-You're now free to mix and match as you want to:
+You're now free to mix and match just as you want to:
 
 - Ontology packs: `genealogy.json`, `docs.json`, `recipes.json`
 - Layout engines: tree, force-graph, radial
@@ -51,9 +51,14 @@ You're now free to mix and match as you want to:
 | Layer       | Purpose             |
 | ----------- | ------------------- |
 | Frontmatter | Truth               |
-| JSON        | Knowledge substrate |
-| GUI display | Human comfort       |
+| JSON        | Data layer          |
+| GUI display | Presentation layer  |
 
+```mermaid
+flowchart LR
+    A@{ shape: docs, label: "Markdown files"} --> |Build database| B@{ shape: db, label: "JSON file"}
+    B --> |Build tree, with JS logic|C@{ shape: docs, label: "HTML, interactive"}
+```
 
 ## Implementation details
 
