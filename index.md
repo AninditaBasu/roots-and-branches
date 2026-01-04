@@ -26,6 +26,10 @@ flowchart TD
     D --> |Jekyll build: Publish| E(GH Pages static site with interactive tree)
 ```
 
+---
+
 ## Technical details
 
 See the [GitHub README](https://github.com/AninditaBasu/roots-and-branches).
+
+---
